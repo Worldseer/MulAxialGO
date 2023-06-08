@@ -7,7 +7,7 @@ AxialGO+ is a protein function prediction model built by the [AxialNet](https://
 
 Model structure of AxialProGO and AxialESM improved based on AxialGO structure is shown in the figure below. AxialProGO only uses sequence-based features (sequence & interpro domain). AxialESM incorporates protein language model [ESMb]([facebookresearch/esm: Evolutionary Scale Modeling (esm): Pretrained language models for proteins (github.com)](https://github.com/facebookresearch/esm#available-models)).
 
-![AxialProGO](https://github.com/Worldseer/AxialGO/blob/main/images/variant model.jpg)
+![AxialProGO](https://github.com/Worldseer/AxialGO/blob/main/images/variant_model.jpg)
 
 ## Dependencies
 
