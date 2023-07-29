@@ -1,13 +1,8 @@
 # **Predicting protein functions from protein sequences with an axial-attention image feature encoder**
 
-AxialGO+ is a protein function prediction model built by the [AxialNet](https://github.com/Worldseer/axial-deeplab) backbone network using only protein features. The model structure is shown in the figure below.
-![AxialGO](https://github.com/Worldseer/AxialGO/blob/main/images/axialgo.jpg)
+MulAxialGO is a protein function prediction model built by the [AxialNet](https://github.com/Worldseer/axial-deeplab) backbone network using only protein features. The model structure is shown in the figure below.
+![MulAxialGO](https://github.com/Worldseer/MulAxialGO/blob/main/images/MulAxialGO.jpg)
 
-
-
-Model structure of AxialProGO and AxialESM improved based on AxialGO structure is shown in the figure below. AxialProGO only uses sequence-based features (sequence & interpro domain). AxialESM incorporates protein language model [ESMb](https://github.com/facebookresearch/esm#available-models).
-
-![AxialProGO](https://github.com/Worldseer/AxialGO/blob/main/images/variant_model.jpg)
 
 ## Dependencies
 
@@ -30,7 +25,7 @@ Model structure of AxialProGO and AxialESM improved based on AxialGO structure i
 * evaluate_results: Contains the results of the evaluation
 
 ## Scripts
-- train_axialgo.py：used to train axialgo and output prediction files
+- train.py：used to train MulAxialGO and output prediction files
 
   ```
   python evaluate_plus.py --train-data-file ./data_2016/train_data.pkl --test-data-file ./predict/prediction_2016.pkl --terms-file ./data_2016/terms.pkl --go-file ./data_2016/go.obo --diamond-scores-file ./data_2016/test_diamond.res --ont mf
@@ -58,17 +53,9 @@ Model structure of AxialProGO and AxialESM improved based on AxialGO structure i
 
 - script/generate_data_loader_all.py：generate six styles of embedded winding matrix, use the trainloader function in it to generate an iterable DataLoader. The DataLoader has two outputs which are X list of matrices containing six winding styles and y is the true label.
 
-- script/axialnet.py: contains AxialNet backbone network code, used to build AxialGO
+- script/axialnet.py: contains AxialNet backbone network code, used to build MulAxialGO
 
-- script/resnet.py: contains the ResNet backbone network code
-
-- script/googlenet.py: contains GoogLeNet backbone network code
-
-- script/vgg.py: contains the VGG backbone network code
-
-- script/alexnet.py: contains the alexnet backbone network code
-
-- script/create_model.py: contains  code for building AxialGO and code for using other backbone network models
+- script/create_model.py: contains  code for building MulAxialGO and code for using other backbone network models
 
 - script/utils.py: codes for Gene Ontology terms
 
@@ -79,11 +66,11 @@ Model structure of AxialProGO and AxialESM improved based on AxialGO structure i
 
 ## Training model
 - Training the model with default parameters:
-You can train the model directly with the default parameters by running `python train_axialgo.py`. Line 65 in the train_axialgo.py file will print the loss values to test if the model is working properly. We recommend commenting out this line if everything works
+You can train the model directly with the default parameters by running `python train.py`. Line 65 in the train.py file will print the loss values to test if the model is working properly. We recommend commenting out this line if everything works
 - Training models with custom parameters,
 Please use:
 ```
-python train_axialgo.py --data-root ./data_2016 --epochs 100 --batch-size 16 --epochs 30 --emb-dim 16 --winding-size 40
+python train.py --data-root ./data_2016 --epochs 100 --batch-size 16 --epochs 30 --emb-dim 16 --winding-size 40
 ```
 
 ## Evaluate prediction.pkl
