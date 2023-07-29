@@ -18,10 +18,10 @@ from script import create_model
     '--data-root', '-dr', default='./data_2016',
     help='Prediction model')
 @ck.option(
-    '--batch-size', '-bs', default=16,
+    '--batch-size', '-bs', default=18,
     help='Batch size for training')
 @ck.option(
-    '--epochs', '-ep', default=30,
+    '--epochs', '-ep', default=50,
     help='Training epochs')
 @ck.option(
     '--emb-dim', '-ed', default=16,
@@ -29,9 +29,11 @@ from script import create_model
 @ck.option(
     '--winding-size', '-ms', default=40,
     help='Winding matrix size')
+@ck.option(
+    '--learning-rate', '-lr', default=0.001,
+    help='Learning rate')
 
-
-def main(data_root,batch_size,epochs,emb_dim,winding_size):
+def main(data_root,batch_size,epochs,emb_dim,winding_size,learning_rate):
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     go = Ontology(f'{data_root}/go.obo', with_rels=True)
     go_list = pd.read_pickle(f'{data_root}/terms.pkl') 
@@ -45,8 +47,8 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size):
     model = create_model.MulAxialGO(emb_dim,winding_size,len(go_list)) #Generate new AxialGO
     model.to(device) 
     loss_fn = nn.BCELoss()
-    optimizer =  torch.optim.SGD(model.parameters(),lr=0.3,weight_decay=1e-5,momentum=0.9) 
-    # optimizer = torch.optim.Adam(model.parameters(),lr=lr)
+    lr = learning_rate
+    optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad==True],lr=lr)
     terms = go_list['terms'].values.flatten()
     terms_dict = {v: i for i, v in enumerate(terms)}
     n_terms = len(terms_dict)
@@ -54,6 +56,11 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size):
     eval_Fmax = 0
     save_path = None
     for epoch in range(epochs):
+        if epoch%5==0 and epoch!=0:
+            model.load_state_dict(torch.load(save_path))
+            lr = lr*0.1
+            optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad==True],lr=lr)
+            print(f"learning rate:",lr,"training number of parameters:",len([p for p in model.parameters() if p.requires_grad==True]))
         model.train()
         train_loss = 0
         for idx,(X,y) in enumerate(trainloader):
