@@ -42,7 +42,7 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size):
     trainloader = generate_data_loader_all.trainloader(train_df,go_list,winding_size,batch_size)
     validloader = generate_data_loader_all.trainloader(valid_df,go_list,winding_size,batch_size)
     testloader = generate_data_loader_all.trainloader(test_df,go_list,winding_size,batch_size,shuffle=False) #cecause the prediction.pkl is generated without disruption
-    model = create_model.AxialGO(emb_dim,winding_size,len(go_list)) #Generate new AxialGO
+    model = create_model.MulAxialGO(emb_dim,winding_size,len(go_list)) #Generate new AxialGO
     model.to(device) 
     loss_fn = nn.BCELoss()
     optimizer =  torch.optim.SGD(model.parameters(),lr=0.3,weight_decay=1e-5,momentum=0.9) 
@@ -84,13 +84,13 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size):
                 if save_path!=None: #Delete the old model
                     os.remove(save_path)
                 best_loss = valid_loss
-                save_path = os.path.join(f"./model/" +"AxialGO_valid_loss_"+ str("%.4f"%float(valid_loss)) +".param") #Save the best model
+                save_path = os.path.join(f"./model/" +"MulAxialGO_valid_loss_"+ str("%.4f"%float(valid_loss)) +".param") #Save the best model
                 torch.save(model.state_dict(), save_path)
      
 
     print("------------Load BEST Model----------------")
     print(save_path)
-    model_test = create_model.AxialGO(emb_dim,winding_size,len(go_list)) #Generate new parameters
+    model_test = create_model.MulAxialGO(emb_dim,winding_size,len(go_list)) #Generate new parameters
     model_test.load_state_dict(torch.load(save_path)) #Load the best model 
     model_test.to(device)
     model_test.eval()
