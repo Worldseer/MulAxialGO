@@ -1,4 +1,3 @@
-````
 # **Predicting protein functions from protein sequences with an axial-attention image feature encoder**
 
 MulAxialGO is a protein function prediction model built by the [AxialNet](https://github.com/Worldseer/axial-deeplab) backbone network using only protein features. The model structure is shown in the figure below.
@@ -62,5 +61,4 @@ python train.py --data-root ./data_2016 --epochs 100 --batch-size 16 --epochs 30
 
 ```
 python evaluate_plus.py --train-data-file ./data_2016/train_data.pkl --test-data-file ./predict/prediction_2016.pkl --terms-file ./data_2016/terms.pkl --go-file ./data_2016/go.obo --diamond-scores-file ./data_2016/test_diamond.res --ont mf
-```xxxxxxxxxx python evaluate_plus.py --train-data-file ./data_2016/train_data.pkl --test-data-file ./predict/prediction_2016.pkl --terms-file ./data_2016/terms.pkl --go-file ./data_2016/go.obo --diamond-scores-file ./data_2016/test_diamond.res --ont mf
-````
+```xxxxxxxxxx python evaluate_plus.py --train-data-file ./data_2016/train_data.pkl --test-data-file ./predict/prediction_2016.pkl --terms-file ./data_2016/terms.pkl --go-file ./data_2016/go.obo --diamond-scores-file ./data_2016/test_diamond.res --ont mf
