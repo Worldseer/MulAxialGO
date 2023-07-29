@@ -31,27 +31,7 @@ MulAxialGO is a protein function prediction model built by the [AxialNet](https:
   python evaluate_plus.py --train-data-file ./data_2016/train_data.pkl --test-data-file ./predict/prediction_2016.pkl --terms-file ./data_2016/terms.pkl --go-file ./data_2016/go.obo --diamond-scores-file ./data_2016/test_diamond.res --ont mf
   ```
 
-- evaluate_naive.py：
-
-  ```
-  python evaluate_naive.py -p ./data_2016/ -o mf > ./results/2016_naive_mf.txt
-  ```
-
-- evaluate_diamondblast.py:
-
-  ```
-  python evaluate_diamondblast.py -p ./data_2016/ -o mf > ./results/2016_diamondblast_mf.txt
-  ```
-
-- evaluate_diamondscore.py:
-
-  ```
-  python evaluate_diamondscore.py -p ./data_2016/ -o mf > ./results/2016_diamondscore_mf.txt
-  ```
-
-  
-
-- script/generate_data_loader_all.py：generate six styles of embedded winding matrix, use the trainloader function in it to generate an iterable DataLoader. The DataLoader has two outputs which are X list of matrices containing six winding styles and y is the true label.
+- script/generator_loader.py：to generate an iterable DataLoader. 
 
 - script/axialnet.py: contains AxialNet backbone network code, used to build MulAxialGO
 
@@ -60,9 +40,6 @@ MulAxialGO is a protein function prediction model built by the [AxialNet](https:
 - script/utils.py: codes for Gene Ontology terms
 
   
-
-## Trained model
-* model/: Contains the parameters of the model trained in the CAFA3 and 2016 datasets. Both model parameters provided are trained using the winding style (a), winding matrix size of 40 and embedding dimension of 16 from the paper.
 
 ## Training model
 - Training the model with default parameters:
@@ -78,5 +55,3 @@ python train.py --data-root ./data_2016 --epochs 100 --batch-size 16 --epochs 30
 ```
 python evaluate_plus.py --train-data-file ./data_2016/train_data.pkl --test-data-file ./predict/prediction_2016.pkl --terms-file ./data_2016/terms.pkl --go-file ./data_2016/go.obo --diamond-scores-file ./data_2016/test_diamond.res --ont mf
 ```
-
-## Evaluate prediction.pkl
