@@ -12,7 +12,7 @@ MulAxialGO is a protein function prediction model built by the [AxialNet](https:
   ```conda create --name <env> --file requirements.txt```
   or
   ```conda env create -f environment.yml```
-* For the integration of model and DiamondScore to obtain model+, the [diamond](https://github.com/bbuchfink/diamond) package needs to be installed.
+* For the integration of model and DiamondScore to obtain MulAxialGO, the [diamond](https://github.com/bbuchfink/diamond) package needs to be installed.
 
 
 
