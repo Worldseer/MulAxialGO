@@ -31,7 +31,8 @@ class axialbackbone(nn.Module):
         self.backbone = axialnet.AxialAttentionNet(axialnet.AxialBlock,[1, 2, 4, 1],in_dim=3, s=0.5, con2d_groups=1, groups=8, image_size=winding_size*self.r)
 
     def forward(self,x):
-        x_1 = self.emb_1(x).permute(0,3,1,2)
+        x_1 = self.emb_1(x)
+        x_1 = x_1.permute(0,3,1,2)
         x_1 = self.pixel_shuffle(x_1)
         x_2 = self.emb_2(x).permute(0,3,1,2)
         x_2 = self.pixel_shuffle(x_2)

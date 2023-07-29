@@ -9,7 +9,7 @@ import pickle
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import sys
-from script import generate_data_loader_all
+from script import generator_loader
 from script.utils import Ontology
 from script import create_model
 
@@ -27,13 +27,13 @@ from script import create_model
     '--emb-dim', '-ed', default=16,
     help='Embedding Dim')
 @ck.option(
-    '--winding-size', '-ms', default=40,
+    '--msize', '-ms', default=40,
     help='Winding matrix size')
 @ck.option(
     '--learning-rate', '-lr', default=0.001,
     help='Learning rate')
 
-def main(data_root,batch_size,epochs,emb_dim,winding_size,learning_rate):
+def main(data_root,batch_size,epochs,emb_dim,msize,learning_rate):
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     go = Ontology(f'{data_root}/go.obo', with_rels=True)
     go_list = pd.read_pickle(f'{data_root}/terms.pkl') 
@@ -41,10 +41,10 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size,learning_rate):
     valid_df = pd.read_pickle(f'{data_root}/train_data_valid.pkl')
     test_df = pd.read_pickle(f'{data_root}/test_data.pkl') 
     out_file = os.path.join(f'./predict/prediction_axialgo.pkl') #Output path for prediction.pkl
-    trainloader = generate_data_loader_all.trainloader(train_df,go_list,winding_size,batch_size)
-    validloader = generate_data_loader_all.trainloader(valid_df,go_list,winding_size,batch_size)
-    testloader = generate_data_loader_all.trainloader(test_df,go_list,winding_size,batch_size,shuffle=False) #cecause the prediction.pkl is generated without disruption
-    model = create_model.MulAxialGO(emb_dim,winding_size,len(go_list)) #Generate new AxialGO
+    trainloader = generator_loader.datasetloader(train_df,go_list,batch_size,msize,shuffle=True)
+    validloader = generator_loader.datasetloader(valid_df,go_list,batch_size,msize,shuffle=True)
+    testloader = generator_loader.datasetloader(test_df,go_list,batch_size,msize,shuffle=False) #cecause the prediction.pkl is generated without disruption
+    model = create_model.MulAxialGO(emb_dim,msize,len(go_list)) #Generate new AxialGO
     model.to(device) 
     loss_fn = nn.BCELoss()
     lr = learning_rate
@@ -63,10 +63,10 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size,learning_rate):
             print(f"learning rate:",lr,"training number of parameters:",len([p for p in model.parameters() if p.requires_grad==True]))
         model.train()
         train_loss = 0
-        for idx,(X,y) in enumerate(trainloader):
+        for idx,(x_seq,x_esm,y) in enumerate(trainloader):
             model.zero_grad()
             y = y.to(device)
-            y_pre = model(X[0].to(device)) #winding style a-f corresponds to X[0]-X[5] respectively
+            y_pre = model(x_seq.to(device), x_esm.to(device))
             loss = loss_fn(y_pre,y)
             loss.backward()
             print(loss)
@@ -78,9 +78,9 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size,learning_rate):
             valid_loss = 0
             preds = []
             valid_labels = []
-            for idx,(X,y) in enumerate(validloader):
+            for idx,(x_seq,x_esm,y)  in enumerate(validloader):
                 y = y.to(device)
-                y_pre = model(X[0].to(device))
+                y_pre = model(x_seq.to(device), x_esm.to(device))
                 loss = loss_fn(y_pre,y)
                 valid_loss += loss.detach().item()
                 preds = np.append(preds, y_pre.detach().cpu().numpy())
@@ -97,7 +97,7 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size,learning_rate):
 
     print("------------Load BEST Model----------------")
     print(save_path)
-    model_test = create_model.MulAxialGO(emb_dim,winding_size,len(go_list)) #Generate new parameters
+    model_test = create_model.MulAxialGO(emb_dim,msize,len(go_list)) #Generate new parameters
     model_test.load_state_dict(torch.load(save_path)) #Load the best model 
     model_test.to(device)
     model_test.eval()
@@ -105,9 +105,9 @@ def main(data_root,batch_size,epochs,emb_dim,winding_size,learning_rate):
         test_loss = 0
         preds = []
         test_labels = []
-        for idx,(X,y) in enumerate(testloader):
+        for idx,(x_seq,x_esm,y) in enumerate(testloader):
             y = y.to(device)
-            y_pre = model_test(X[0].to(device))
+            y_pre = model_test(x_seq.to(device), x_esm.to(device))
             batch_loss = loss_fn(y_pre,y)
             test_loss += batch_loss.detach().cpu().item()
             preds = np.append(preds, y_pre.detach().cpu().numpy())

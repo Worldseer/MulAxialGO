@@ -56,7 +56,7 @@ def token2num(seq):#output torch.out_size([2304])
 
     
 class dataset_loder(Dataset):
-    def __init__(self,protein_df,go_df,out_size,inter_df):
+    def __init__(self,protein_df,go_df,out_size):
         super(dataset_loder,self).__init__()
         self.protein_df = protein_df
         if "terms" in go_df:
@@ -64,8 +64,6 @@ class dataset_loder(Dataset):
         if "gos" in go_df:
             self.terms  = go_df['gos'].values.flatten()
         self.go_dict = {v: i for i, v in enumerate(self.terms)}
-        iprs = inter_df['interpros'].values.flatten()
-        self.inter_dict = {v:k for k, v in enumerate(iprs)}
         self.length = len(protein_df)
         self.out_size = out_size
 
@@ -75,13 +73,7 @@ class dataset_loder(Dataset):
     
     def __getitem__(self,idx):
         labels = torch.zeros(len(self.go_dict), dtype=torch.float32)
-        interpros = torch.zeros(len(self.inter_dict), dtype=torch.float32)
         esm_1b = self.protein_df.iloc[idx].esm1b
-        # interpros_list = []
-        for inter_id in self.protein_df.iloc[idx].interpros:
-            if inter_id in self.inter_dict:
-                index = self.inter_dict[inter_id]
-                interpros[index] = 1 
         seq = self.protein_df.iloc[idx].sequences# Extraction of the corresponding protein sequence
         imatrix  = genimatrix(seq,self.out_size)
         if "prop_annotations" in self.protein_df:
@@ -94,12 +86,12 @@ class dataset_loder(Dataset):
                 if go in self.go_dict:
                     index = self.go_dict[go]
                     labels[index] = 1
-        return imatrix,interpros,esm_1b,labels
+        return imatrix,esm_1b,labels
         
 
 
-def datasetloader(data_df,go_df,batch_size,Msize,shuffle,inter_df):# input df data, output DataLoader
-    dataloader = DataLoader(dataset=dataset_loder(data_df,go_df,Msize,inter_df),shuffle=shuffle,batch_size=batch_size,num_workers=6)
+def datasetloader(data_df,go_df,batch_size,Msize,shuffle):# input df data, output DataLoader
+    dataloader = DataLoader(dataset=dataset_loder(data_df,go_df,Msize),shuffle=shuffle,batch_size=batch_size,num_workers=6)
     return dataloader
 
   
