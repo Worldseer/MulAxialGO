@@ -1,7 +1,7 @@
 # **Predicting protein functions from protein sequences with an axial-attention image feature encoder**
 
 MulAxialGO is a protein function prediction model built by the [AxialNet](https://github.com/Worldseer/axial-deeplab) backbone network using only protein features. The model structure is shown in the figure below.
-![MulAxialGO](https://github.com/Worldseer/MulAxialGO/blob/main/images/MulAxialGO.jpg)
+![MulAxialGO](https://github.com/Worldseer/MulAxialGO/blob/main/images/muaxialgo.jpg)
 
 
 ## Dependencies
